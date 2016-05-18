@@ -10,6 +10,7 @@ var util=require('./util');
 module.exports=function(opt){
     var wechat=new Wechat(opt);
     return function *(next){
+        var that=this;
         var token=opt.token;
         var signature=this.query.signature;
         var nonce=this.query.nonce;
@@ -46,26 +47,26 @@ module.exports=function(opt){
 
             console.log('处理对象...');
 
-            var message=util.formatMessage(content);
+            var message=util.formatMessage(content.xml);
 
             console.log(message);
-
-            if(message.msgType==='event'){
-                if(message.Event==='text'){
+            //if(message.MsgType==='event'){
+            //    console.log('event');
+                if(message.MsgType==='text'){
                     var now=new Date().getTime();
                     that.status=200;
                     that.type='application/xml';
-                    that.body='<xml>'+
+                    var reply= '<xml>'+
                     '<ToUserName><![CDATA['+message.FromUserName+']]></ToUserName>'+
                     '<FromUserName><![CDATA['+message.ToUserName+']]></FromUserName>'+
                     '<CreateTime>'+now+'</CreateTime>'+
                     '<MsgType><![CDATA[text]]></MsgType>'+
                     '<Content><![CDATA[哈哈哈哈]]></Content>'+
                     '</xml>';
-
+                    that.body=reply;
                     return;
                 }
-            }
+            //}
 
         }
 

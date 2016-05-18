@@ -24,7 +24,7 @@ function formatMessage(result){
         for(var i=0;i<keys.length;i++){
             var item=result[keys[i]];
             var key=keys[i];
-            console.log(item instanceof  Array);
+            console.log(item instanceof  Object);
             console.log(item.length);
             console.log('计数'+i);
 
