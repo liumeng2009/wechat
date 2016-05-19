@@ -7,7 +7,7 @@ var Wechat=require('./wechat');
 var getRawBody=require('raw-body');
 var util=require('./util');
 
-module.exports=function(opt){
+module.exports=function(opt,handler){
     var wechat=new Wechat(opt);
     return function *(next){
         var that=this;
@@ -50,23 +50,14 @@ module.exports=function(opt){
             var message=util.formatMessage(content.xml);
 
             console.log(message);
-            //if(message.MsgType==='event'){
-            //    console.log('event');
-                if(message.MsgType==='text'){
-                    var now=new Date().getTime();
-                    that.status=200;
-                    that.type='application/xml';
-                    var reply= '<xml>'+
-                    '<ToUserName><![CDATA['+message.FromUserName+']]></ToUserName>'+
-                    '<FromUserName><![CDATA['+message.ToUserName+']]></FromUserName>'+
-                    '<CreateTime>'+now+'</CreateTime>'+
-                    '<MsgType><![CDATA[text]]></MsgType>'+
-                    '<Content><![CDATA[哈哈哈哈]]></Content>'+
-                    '</xml>';
-                    that.body=reply;
-                    return;
-                }
-            //}
+
+            this.weixin=message;
+
+            console.log(this.weixin);
+
+            yield handler.call(this,next);
+
+            wechat.reply.call(this);
 
         }
 

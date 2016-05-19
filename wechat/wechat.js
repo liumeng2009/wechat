@@ -6,9 +6,12 @@
 var sha1=require('sha1');
 var Promise=require('bluebird');
 var request=Promise.promisify(require('request'));
+var tpl=require('./tmp');
+var util=require('./util');
 var prefix='https://api.weixin.qq.com/cgi-bin/';
 var api={
-    accessToken:prefix+'token?grant_type=client_credential'
+    accessToken:prefix+'token?grant_type=client_credential',
+    upload:prefix+'media/upload?type'
 }
 
 function Wechat(opts){
@@ -75,6 +78,40 @@ Wechat.prototype.updateAccessToken=function(){
     });
 
 }
+
+Wechat.prototype.reply=function(){
+    var content=this.body;
+    var message=this.weixin;
+    var xml=util.tpl(content,message);
+    this.status=200;
+    this.type='application/xml';
+    this.body=xml;
+}
+
+Wechat.prototype.uploadMaterial=function(type,filepath){
+    var that=this;
+    var form={
+        media:fs.createReadStream(filepath)
+    };
+
+    return new Promise(function(resolve,reject){
+        that
+            .fetchAccessToken()
+            .then(function(data){
+                var url=api.upload+'&access_token='+data.access_token+'&type='+type
+            })
+    });
+
+
+    var content=this.body;
+    var message=this.weixin;
+    var xml=util.tpl(content,message);
+    this.status=200;
+    this.type='application/xml';
+    this.body=xml;
+}
+
+
 
 module.exports=Wechat;
 

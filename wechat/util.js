@@ -6,6 +6,7 @@
 
 var xml2js=require('xml2js');
 var Promise=require('bluebird');
+var tpl=require('./tmp');
 
 exports.parseXMLAsync=function(xml){
     return new Promise(function(resolve,reject){
@@ -24,12 +25,8 @@ function formatMessage(result){
         for(var i=0;i<keys.length;i++){
             var item=result[keys[i]];
             var key=keys[i];
-            console.log(item instanceof  Object);
-            console.log(item.length);
-            console.log('计数'+i);
 
             if(!(item instanceof Array)||item.length===0){
-                console.log('stop??????');
                 continue;
             }
             if(item.length===1){
@@ -56,3 +53,23 @@ function formatMessage(result){
 }
 
 exports.formatMessage=formatMessage;
+
+exports.tpl=function(content,message){
+    var info={};
+    var type='text';
+    var fromUserName=message.FromUserName;
+    var toUserName=message.ToUserName;
+
+    if(Array.isArray(content)){
+        type='news';
+    }
+    type=content.type||type;
+    info.content=content;
+    info.createTime=new Date().getTime();
+    info.msgType=type;
+    info.toUserName=fromUserName;
+    info.fromUserName=toUserName;
+
+    return tpl.compiled(info);
+
+}
