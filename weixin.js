@@ -3,6 +3,11 @@
  */
 'use strict'
 
+var config=require('./config');
+var Wechat=require('./wechat/wechat');
+
+var wechatapi=new Wechat(config.wechat);
+
 exports.reply=function*(next){
     var message=this.weixin;
     console.log('MsgType is:' +message.MsgType);
@@ -55,6 +60,24 @@ exports.reply=function*(next){
                 createTime:new Date().getTime()
             }
             ];
+        }
+        else if(content==='5'){
+            console.log(__dirname+'/2.png');
+            var data=yield wechatapi.uploadMaterial('image',__dirname+'/2.png');
+            console.log(data);
+            reply={
+                type:'image',
+                mediaId:data.media_id
+            };
+        }
+        else if(content==='6'){
+            console.log(__dirname+'/2.png');
+            var data=yield wechatapi.uploadMaterial('image',__dirname+'/2.png');
+            console.log(data);
+            reply={
+                type:'image',
+                mediaId:data.media_id
+            };
         }
         this.body=reply;
     }
